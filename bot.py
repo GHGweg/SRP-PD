@@ -1,10 +1,28 @@
+import os
+import threading
 import discord
 from discord import app_commands
 from discord.ext import commands
-import os
+from flask import Flask
 
 # ----------------------------
-# Intents aktivieren
+# Flask-Statusseite
+# ----------------------------
+app = Flask(__name__)
+
+@app.route("/")
+def home():
+    return "✅ Bot läuft!"
+
+def run_flask():
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port)
+
+# Flask in einem Thread starten
+threading.Thread(target=run_flask).start()
+
+# ----------------------------
+# Discord-Bot
 # ----------------------------
 intents = discord.Intents.default()
 intents.members = True
@@ -46,23 +64,19 @@ async def on_ready():
 @bot.tree.command(name="cop-kick", description="Mitglied kündigen")
 @app_commands.describe(member="Mitglied auswählen", grund="Grund angeben", teamsperre="Teamsperre hinzufügen? (true/false)")
 async def cop_kick(interaction: discord.Interaction, member: discord.Member, grund: str, teamsperre: bool = False):
-    # Rollen entfernen außer @everyone
     roles_to_remove = [role for role in member.roles if role != interaction.guild.default_role]
     if roles_to_remove:
         await member.remove_roles(*roles_to_remove)
 
-    # Besucherrolle geben
     besucher_role = get_role_by_name(interaction.guild, ROLLE_BESUCHER)
     if besucher_role:
         await member.add_roles(besucher_role)
 
-    # Teamsperre optional
     if teamsperre:
         ts_role = get_role_by_name(interaction.guild, ROLLE_TEAMSCHLUSS)
         if ts_role:
             await member.add_roles(ts_role)
 
-    # Embed Nachricht
     embed = discord.Embed(title="❌ Kündigung", color=discord.Color.red())
     embed.add_field(name="👤 Mitglied", value=member.mention, inline=False)
     embed.add_field(name="📝 Grund", value=grund, inline=False)
@@ -76,13 +90,16 @@ async def cop_kick(interaction: discord.Interaction, member: discord.Member, gru
 @bot.tree.command(name="up-rank", description="Mitglied befördern")
 @app_commands.describe(member="Mitglied auswählen", neue_rolle="Neue Rolle geben", grund="Grund angeben")
 async def up_rank(interaction: discord.Interaction, member: discord.Member, neue_rolle: discord.Role, grund: str):
-    await member.add_roles(neue_rolle)
-    embed = discord.Embed(title="⬆️ Beförderung", color=discord.Color.green())
-    embed.add_field(name="👤 Mitglied", value=member.mention, inline=False)
-    embed.add_field(name="➡️ Neue Rolle", value=neue_rolle.mention, inline=False)
-    embed.add_field(name="📝 Grund", value=grund, inline=False)
-    embed.add_field(name="📅 Datum", value=interaction.created_at.strftime("%d.%m.%Y"), inline=False)
-    await interaction.response.send_message(embed=embed)
+    try:
+        await member.add_roles(neue_rolle)
+        embed = discord.Embed(title="⬆️ Beförderung", color=discord.Color.green())
+        embed.add_field(name="👤 Mitglied", value=member.mention, inline=False)
+        embed.add_field(name="➡️ Neue Rolle", value=neue_rolle.mention, inline=False)
+        embed.add_field(name="📝 Grund", value=grund, inline=False)
+        embed.add_field(name="📅 Datum", value=interaction.created_at.strftime("%d.%m.%Y"), inline=False)
+        await interaction.response.send_message(embed=embed)
+    except discord.Forbidden:
+        await interaction.response.send_message("❌ Fehler: Bot hat keine Berechtigung, die Rolle zu vergeben.", ephemeral=True)
 
 # ----------------------------
 # /down-rank Befehl
@@ -90,13 +107,16 @@ async def up_rank(interaction: discord.Interaction, member: discord.Member, neue
 @bot.tree.command(name="down-rank", description="Mitglied degradieren")
 @app_commands.describe(member="Mitglied auswählen", neue_rolle="Neue Rolle geben", grund="Grund angeben")
 async def down_rank(interaction: discord.Interaction, member: discord.Member, neue_rolle: discord.Role, grund: str):
-    await member.add_roles(neue_rolle)
-    embed = discord.Embed(title="⬇️ Degradierung", color=discord.Color.orange())
-    embed.add_field(name="👤 Mitglied", value=member.mention, inline=False)
-    embed.add_field(name="➡️ Neue Rolle", value=neue_rolle.mention, inline=False)
-    embed.add_field(name="📝 Grund", value=grund, inline=False)
-    embed.add_field(name="📅 Datum", value=interaction.created_at.strftime("%d.%m.%Y"), inline=False)
-    await interaction.response.send_message(embed=embed)
+    try:
+        await member.add_roles(neue_rolle)
+        embed = discord.Embed(title="⬇️ Degradierung", color=discord.Color.orange())
+        embed.add_field(name="👤 Mitglied", value=member.mention, inline=False)
+        embed.add_field(name="➡️ Neue Rolle", value=neue_rolle.mention, inline=False)
+        embed.add_field(name="📝 Grund", value=grund, inline=False)
+        embed.add_field(name="📅 Datum", value=interaction.created_at.strftime("%d.%m.%Y"), inline=False)
+        await interaction.response.send_message(embed=embed)
+    except discord.Forbidden:
+        await interaction.response.send_message("❌ Fehler: Bot hat keine Berechtigung, die Rolle zu vergeben.", ephemeral=True)
 
 # ----------------------------
 # /cop-warn Befehl
@@ -107,7 +127,6 @@ async def cop_warn(interaction: discord.Interaction, member: discord.Member, gru
     colors = {1: discord.Color.yellow(), 2: discord.Color.orange()}
     emojis = {1: "⚠️", 2: "⚠️⚠️"}
 
-    # Rolle je nach Stufe
     if stufe == 1:
         role = get_role_by_name(interaction.guild, ROLLE_1_WARN)
         if role:
@@ -134,4 +153,4 @@ if __name__ == "__main__":
     if token:
         bot.run(token)
     else:
-        print("❌ Fehler: Kein TOKEN gefunden. Bitte als Environment Variable setzen.")
+        print("❌ Kein TOKEN gefunden. Bitte als Environment Variable setzen.")
