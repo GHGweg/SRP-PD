@@ -78,8 +78,7 @@ Up und Downranks /up-rank / down-rank @name neue rolle grund
 
 Nur Mitglieder mit einer dieser Rollen dürfen Befehle ausführen:
 	•	✴ ⊶▬⊶▬ 𝐀𝐛𝐭𝐞𝐢𝐥𝐮𝐧𝐠𝐞𝐧 ▬⊷▬⊷ ✴
-	•	Projektleitung
-	•	Stv.Projektleitung
+	• Teamverwaltung
 
 
 
