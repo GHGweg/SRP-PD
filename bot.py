@@ -38,6 +38,18 @@ ROLLE_1_WARN = "❌ | 1.Abmahnung"
 ROLLE_2_WARN = "❌ | 2.Abmahnung"
 
 # ----------------------------
+# Zugriff nur für diese Rolle
+# ----------------------------
+ERLAUBTE_ROLLEN = ["✴ ⊶▬⊶▬ 𝐀𝐛𝐭𝐞𝐢𝐥𝐮𝐧𝐠𝐞𝐧 ▬⊷▬⊷ ✴"]
+
+def has_role(member: discord.Member, role_names: list):
+    """Prüft, ob ein Mitglied eine der erlaubten Rollen hat."""
+    for role in member.roles:
+        if role.name in role_names:
+            return True
+    return False
+
+# ----------------------------
 # Hilfsfunktion für Rollen
 # ----------------------------
 def get_role_by_name(guild, name):
@@ -64,6 +76,10 @@ async def on_ready():
 @bot.tree.command(name="cop-kick", description="Mitglied kündigen")
 @app_commands.describe(member="Mitglied auswählen", grund="Grund angeben", teamsperre="Teamsperre hinzufügen? (true/false)")
 async def cop_kick(interaction: discord.Interaction, member: discord.Member, grund: str, teamsperre: bool = False):
+    if not has_role(interaction.user, ERLAUBTE_ROLLEN):
+        await interaction.response.send_message("❌ Du hast keine Berechtigung für diesen Befehl!", ephemeral=True)
+        return
+
     roles_to_remove = [role for role in member.roles if role != interaction.guild.default_role]
     if roles_to_remove:
         await member.remove_roles(*roles_to_remove)
@@ -90,6 +106,10 @@ async def cop_kick(interaction: discord.Interaction, member: discord.Member, gru
 @bot.tree.command(name="up-rank", description="Mitglied befördern")
 @app_commands.describe(member="Mitglied auswählen", neue_rolle="Neue Rolle geben", grund="Grund angeben")
 async def up_rank(interaction: discord.Interaction, member: discord.Member, neue_rolle: discord.Role, grund: str):
+    if not has_role(interaction.user, ERLAUBTE_ROLLEN):
+        await interaction.response.send_message("❌ Du hast keine Berechtigung für diesen Befehl!", ephemeral=True)
+        return
+
     try:
         await member.add_roles(neue_rolle)
         embed = discord.Embed(title="⬆️ Beförderung", color=discord.Color.green())
@@ -107,6 +127,10 @@ async def up_rank(interaction: discord.Interaction, member: discord.Member, neue
 @bot.tree.command(name="down-rank", description="Mitglied degradieren")
 @app_commands.describe(member="Mitglied auswählen", neue_rolle="Neue Rolle geben", grund="Grund angeben")
 async def down_rank(interaction: discord.Interaction, member: discord.Member, neue_rolle: discord.Role, grund: str):
+    if not has_role(interaction.user, ERLAUBTE_ROLLEN):
+        await interaction.response.send_message("❌ Du hast keine Berechtigung für diesen Befehl!", ephemeral=True)
+        return
+
     try:
         await member.add_roles(neue_rolle)
         embed = discord.Embed(title="⬇️ Degradierung", color=discord.Color.orange())
@@ -124,6 +148,10 @@ async def down_rank(interaction: discord.Interaction, member: discord.Member, ne
 @bot.tree.command(name="cop-warn", description="Mitglied verwarnen")
 @app_commands.describe(member="Mitglied auswählen", grund="Grund angeben", stufe="Warnstufe (1 oder 2)")
 async def cop_warn(interaction: discord.Interaction, member: discord.Member, grund: str, stufe: int):
+    if not has_role(interaction.user, ERLAUBTE_ROLLEN):
+        await interaction.response.send_message("❌ Du hast keine Berechtigung für diesen Befehl!", ephemeral=True)
+        return
+
     colors = {1: discord.Color.yellow(), 2: discord.Color.orange()}
     emojis = {1: "⚠️", 2: "⚠️⚠️"}
 
