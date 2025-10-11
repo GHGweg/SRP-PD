@@ -128,3 +128,9 @@ Alle Tickets werden in der Kategorie `Bewerbungsgespräch` erstellt. Das Ticket-
 - Nutzt Discord Embeds und Buttons (`discord.ui`)  
 - Bot benötigt Berechtigungen: Kanäle verwalten, Nachrichten senden, Nachrichten lesen  
 - Ticket-Name wird automatisch aus dem Discord-Namen erstellt
+- 
+
+
+EINLADUNGS LINK:
+
+https://discord.com/oauth2/authorize?client_id=1425967124903624746
