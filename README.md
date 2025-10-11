@@ -153,3 +153,40 @@ Nur Mitglieder mit mindestens einer dieser Rollen dürfen Befehle ausführen:
 Alle anderen Nutzer bekommen eine Fehlermeldung wie:
 
 ❌ Du hast keine Berechtigung, diesen Befehl zu verwenden.
+
+
+ /ticket-setup
+Mit diesem Befehl kann ein Administrator oder jemand mit der Rolle Teamverwaltung oder ✴ ⊶▬⊶▬ 𝐀𝐛𝐭𝐞𝐢𝐥𝐮𝐧𝐠𝐞𝐧 ▬⊷▬⊷ ✴ ein Ticket-Panel in einen gewünschten Kanal senden. Das Panel besteht aus einer Embed-Nachricht mit einem Button, über den Nutzer ein privates Ticket eröffnen können.
+
+📋 Verwendung
+
+/ticket-setup channel:#kanal
+
+channel → Der Kanal, in dem das Ticket-Panel gesendet werden soll.
+Beispiel:
+
+/ticket-setup channel:#support
+
+📩 Ablauf für Nutzer
+
+Nutzer klickt auf den „🎫 Ticket erstellen“ Button.
+Der Bot erstellt automatisch einen privaten Kanal mit dem Namen ticket-username.
+Zugriff nur für:
+Ticket-Ersteller
+Mitglieder mit der Rolle staff
+Ersteller und Staff können frei schreiben.
+Es gibt einen „❌ Ticket schließen“ Button, den nur staff nutzen darf.
+
+🧹 Ticket schließen
+
+Nur Staff kann Tickets schließen.
+Beim Schließen löscht der Bot den Ticket-Kanal automatisch.
+
+💡 Hinweise
+
+Nutzt Discord Embeds und Buttons (discord.ui).
+Bot benötigt Berechtigungen:
+Kanäle verwalten
+Nachrichten senden
+Nachrichten lesen
+Ticket-Name wird automatisch aus dem Discord-Namen erstellt.
