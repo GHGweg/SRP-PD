@@ -551,6 +551,40 @@ async def abmeldung(interaction: discord.Interaction, panel_channel: discord.Tex
     log(f"abmeldung-panel erstellt by {interaction.user} | panel_channel={panel_channel.name} | announce_channel={announce_channel.name}")
 
 # ----------------------------
+# /ankündigung
+# ----------------------------
+@bot.tree.command(name="ankündigung", description="Postet eine offizielle Ankündigung mit Überschrift, Text und optionalen Pings.")
+@app_commands.describe(
+    channel="Zielkanal für die Ankündigung",
+    überschrift="Überschrift der Ankündigung (wird automatisch GROSS geschrieben)",
+    text="Inhalt der Ankündigung",
+    pings="Optional: Erwähnung von Rollen oder Nutzern (z. B. @Team oder @everyone)"
+)
+async def ankündigung(interaction: discord.Interaction, channel: discord.TextChannel, überschrift: str, text: str, pings: str = None):
+    # Berechtigungsprüfung
+    if not has_admin_permission(interaction.user):
+        await interaction.response.send_message("❌ Du hast keine Berechtigung, Ankündigungen zu posten.", ephemeral=True)
+        return
+
+    # Erstelle Embed
+    embed = discord.Embed(
+        title=überschrift.upper(),
+        description=text,
+        color=discord.Color.blue()
+    )
+    embed.set_footer(text=f"Veröffentlicht von {interaction.user.display_name}")
+    embed.timestamp = datetime.datetime.utcnow()
+
+    # Sende Ankündigung
+    try:
+        content = pings if pings else None
+        await channel.send(content=content, embed=embed)
+        await interaction.response.send_message(f"✅ Ankündigung in {channel.mention} gesendet.", ephemeral=True)
+        log(f"Ankündigung: by {interaction.user} | überschrift={überschrift} | channel={channel.name} | pings={pings}")
+    except Exception as e:
+        await interaction.response.send_message("❌ Fehler beim Senden der Ankündigung.", ephemeral=True)
+        log(f"Fehler beim Senden Ankündigung: {e}")
+# ----------------------------
 # Start Bot (TOKEN Platzhalter)
 # ----------------------------
 if __name__ == "__main__":
