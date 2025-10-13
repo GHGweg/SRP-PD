@@ -131,6 +131,3 @@ Alle Tickets werden in der Kategorie `Bewerbungsgespräch` erstellt. Das Ticket-
 - 
 
 
-EINLADUNGS LINK:
-
-https://discord.com/oauth2/authorize?client_id=1425967124903624746
